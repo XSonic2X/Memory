@@ -29,11 +29,19 @@ namespace Memory
         /// <returns></returns>
         public IntPtr FinalAddress(IntPtr BaseAddress, int[] BiasAddress)
         {
+#if x86
+            for (int i = 0; i < BiasAddress.Count() - 1; i++)
+            {
+                BaseAddress = (IntPtr)ReadInt32(IntPtr.Add(BaseAddress, BiasAddress[i]));
+            }
+            return BaseAddress + BiasAddress[Convert.ToInt32(BiasAddress.Count() - 1)];
+#else
             for (int i = 0; i < BiasAddress.Count() - 1; i++)
             {
                 BaseAddress = (IntPtr)ReadInt64(IntPtr.Add(BaseAddress, BiasAddress[i]));
             }
             return BaseAddress + BiasAddress[Convert.ToInt32(BiasAddress.Count() - 1)];
+#endif
         }
         public IntPtr FinalAddress(int[] BiasAddress) => FinalAddress(baseAddress, BiasAddress);
         public List<IntPtr> SignaturesSearch(Signatures signatures,int start , int Size)
