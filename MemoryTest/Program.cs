@@ -17,6 +17,7 @@ namespace MemoryTest
             {
                 Console.WriteLine(p.ToString("x2"));
             }
+            Console.WriteLine(processMemory.ReadInt32(processMemory.FinalAddress(new int[] { 0x15, 0x4 })));
             Console.WriteLine("End");
             Console.ReadLine();
         }
