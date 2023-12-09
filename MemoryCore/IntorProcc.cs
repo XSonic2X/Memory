@@ -1,7 +1,6 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
-namespace Memory
+namespace MemoryCore
 {
     public class IntorProcc
     {
@@ -23,7 +22,7 @@ namespace Memory
             {
                 if (processModule == null) { return -1; }
                 return processModule.ModuleMemorySize;
-            } 
+            }
         }
         public IntorProcc(Process process)
         {
@@ -39,7 +38,7 @@ namespace Memory
         public override string ToString()
         {
             if (processModule == null) { return process.ProcessName; }
-            try { return $"{process.MainModule.ModuleName}=>{processModule.ModuleName}"; } 
+            try { return $"{process.MainModule.ModuleName}=>{processModule.ModuleName}"; }
             catch (Exception ex) { return ex.Message; }
         }
     }
