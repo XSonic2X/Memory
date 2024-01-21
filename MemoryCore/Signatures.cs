@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MemoryCore
+﻿namespace MemoryCore
 {
     public class Signatures
     {
@@ -68,7 +62,7 @@ namespace MemoryCore
         }
         public (byte, bool)[] sig { get; private set; } = null;
         public string txt = "No_Signatures";
-        public bool Test(byte a, int id)
+        public bool Test(byte a, long id)
         {
             if (sig[id].Item2) { return a == sig[id].Item1; }
             return true;

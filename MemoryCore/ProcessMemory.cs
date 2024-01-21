@@ -10,12 +10,20 @@ namespace MemoryCore
         {
             intorProcc = iP;
             if (intorProcc.processModule == null)
-            { baseAddress = intorProcc.process.MainModule.BaseAddress; }
-            else { baseAddress = intorProcc.processModule.BaseAddress; }
+            {
+                baseAddress = intorProcc.process.MainModule.BaseAddress;
+                Size = intorProcc.MSize;
+            }
+            else
+            {
+                baseAddress = intorProcc.processModule.BaseAddress;
+                Size = intorProcc.Size;
+            }
             CheckProcess();
         }
         public event Log log;
         public IntorProcc intorProcc;
+        public long Size = 0;
         public IntPtr baseAddress { get; set; }
         public IntPtr processHandle { get; set; }
         /// <summary>
@@ -42,28 +50,29 @@ namespace MemoryCore
             return BaseAddress + BiasAddress[Convert.ToInt64(BiasAddress.Count() - 1)];
         }
         public IntPtr FinalAddress64(int[] BiasAddress) => FinalAddress64(baseAddress, BiasAddress);
-        public List<IntPtr> SignaturesSearch(Signatures signatures, int start, int Size)
+        public IntPtr SignaturesSearch(Signatures signatures, long start, long Size)
         {
-            List<IntPtr> iP = new List<IntPtr>();
-            for (int i = start, j = 0; i < Size; i++)
+            IntPtr offs = IntPtr.Zero;
+            bool test = false;
+            for (long i = start, j = 0; i < Size; i++)
             {
                 if (signatures.Test(ReadByte((IntPtr)i), j))
                 {
                     j++;
-                    if (j >= signatures.sig.Length)
-                    {
-                        iP.Add((IntPtr)i - j);
-                        j = 0;
-                    }
-                    continue;
+                    test = true;
+                    if (j < signatures.sig.Length) { continue; }
+                    j--;
+                    offs = (IntPtr)(i - j);
+                    return offs;
                 }
-                if (j > 0)
+                else if (test)
                 {
                     i -= j;
                     j = 0;
+                    test = false;
                 }
             }
-            return iP;
+            return offs;
         }
         public bool CheckProcess()
         {
