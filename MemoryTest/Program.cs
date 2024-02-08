@@ -7,15 +7,14 @@ namespace MemoryTest
     {
         static void Main(string[] args)
         {
-            IntorProcc intorProcc = ProcessSearch.SearchMachineName("cs2.exe", "client.dll");
+            IntorProcc intorProcc = ProcessSearch.SearchMachineName("test.exe", "test.dll");
             ProcessMemory processMemory = new ProcessMemory(intorProcc);
             processMemory.log += Console.WriteLine;
             Console.WriteLine(processMemory.baseAddress.ToString("x2"));
             Console.ReadLine();
-            Signatures signatures = new Signatures("01 ?? ?? ?? ?? 05 ?? ?? ?? ?? ?? ?? 84 50 34 64 01 ??");
-            IntPtr  iP = processMemory.SignaturesSearch(signatures, (long)processMemory.baseAddress, (long)processMemory.baseAddress + processMemory.Size);
+            Signatures signatures = new Signatures("60 96 01 61 01 ?? ?? ?? ?? CF AB D0 85 ?? ?? ?? ?? 96 78 1B 0F69 03");
+            IntPtr  iP = processMemory.SignaturesSearch(signatures, (long)processMemory.baseAddress, processMemory.Size);
             Console.WriteLine(iP.ToString("x2"));
-            Console.WriteLine(processMemory.ReadInt32(processMemory.FinalAddress(new int[] { 0x15, 0x4 })));
             Console.WriteLine("End");
             Console.ReadLine();
         }

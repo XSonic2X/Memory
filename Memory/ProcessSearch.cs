@@ -71,6 +71,37 @@ namespace Memory
             }
             return null;
         }
+        public static IntorProcc SearchProcessNameTest(string ProcessName)
+        {
+            Process[] processes = Process.GetProcesses();
+            for (int i = 0; i < processes.Length; i++)
+            {
+                try
+                {
+                    if ((int)processes[i].MainWindowHandle != 0 && test(ProcessName, processes[i].ProcessName))
+                    {
+                        return new IntorProcc(processes[i]);
+                    }
+                }
+                catch
+                {
+                }
+            }
+            return null;
+        }
+        public static bool test(string txt1 , string txt2)
+        {
+            if (txt2.Length < txt1.Length) { return false; }
+            for (int i = 0;i < txt1.Length;i++)
+            {
+                if (txt1[i] == txt2[i])
+                {
+                    continue;
+                }
+                return false;
+            }
+            return true;
+        }
         public static IntorProcc SearchProcessName(int ID)
         {
             Process[] processes = Process.GetProcesses();

@@ -12,12 +12,12 @@ namespace MemoryCore
             if (intorProcc.processModule == null)
             {
                 baseAddress = intorProcc.process.MainModule.BaseAddress;
-                Size = intorProcc.MSize;
+                Size = intorProcc.Size - 1;
             }
             else
             {
                 baseAddress = intorProcc.processModule.BaseAddress;
-                Size = intorProcc.Size;
+                Size = intorProcc.MSize - 1;
             }
             CheckProcess();
         }
@@ -53,23 +53,13 @@ namespace MemoryCore
         public IntPtr SignaturesSearch(Signatures signatures, long start, long Size)
         {
             IntPtr offs = IntPtr.Zero;
-            bool test = false;
-            for (long i = start, j = 0; i < Size; i++)
+            Size -= signatures.sig.Length;
+            for (long i = 0; i < Size; i++)
             {
-                if (signatures.Test(ReadByte((IntPtr)i), j))
+                if (signatures.Test(ReadByteArray((IntPtr)(start + i), (uint)signatures.sig.Length)))
                 {
-                    j++;
-                    test = true;
-                    if (j < signatures.sig.Length) { continue; }
-                    j--;
-                    offs = (IntPtr)(i - j);
+                    offs = (IntPtr)(start + i);
                     return offs;
-                }
-                else if (test)
-                {
-                    i -= j;
-                    j = 0;
-                    test = false;
                 }
             }
             return offs;

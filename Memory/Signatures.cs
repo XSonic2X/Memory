@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Memory
 {
@@ -65,6 +66,21 @@ namespace Memory
         }
         public (byte, bool)[] sig { get; private set; } = null;
         public string txt = "No_Signatures";
+        public bool Test(byte[] a)
+        {
+            bool test = true;
+            int i = 0;
+            for (; i < sig.Length; i++)
+            {
+                if (sig[i].Item2)
+                {
+                    if (sig[i].Item1 == a[i]) { continue; }
+                    test = false;
+                    break;
+                }
+            }
+            return test;
+        }
         public bool Test(byte a, long id)
         {
             if (sig[id].Item2) { return a == sig[id].Item1; }
