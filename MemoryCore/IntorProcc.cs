@@ -1,45 +1,43 @@
 ﻿using System.Diagnostics;
 
-namespace MemoryCore
+namespace MemoryCore;
+
+public class IntorProcc
 {
-    public class IntorProcc
+    public IntorProcc(Process process)
     {
-        public int ID { get; private set; } = -1;
-        public bool End { get => process.HasExited; }
-        public Process process { get; set; }
-        public int Size
+        ID = process.Id;
+        this.process = process;
+    }
+    public IntorProcc(Process process, ProcessModule processModule)
+    {
+        ID = process.Id;
+        this.process = process;
+        this.processModule = processModule;
+    }
+
+    public readonly Process process;
+
+    public readonly ProcessModule processModule;
+
+    public readonly int ID;
+    public bool End { get => process.HasExited; }
+    public int Size
+    {
+        get => process is null ? -1 : process.MainModule.ModuleMemorySize;
+    }
+    public int MSize
+    {
+        get => processModule is null ? -1 : processModule.ModuleMemorySize;
+    }
+
+    public override string ToString()
+    {
+        try 
         {
-            get
-            {
-                if (process == null) { return -1; }
-                return process.MainModule.ModuleMemorySize;
-            }
+            return processModule is null ? process.ProcessName :
+                $"{process.MainModule.ModuleName}=>{processModule.ModuleName}";
         }
-        public ProcessModule processModule { get; set; }
-        public int MSize
-        {
-            get
-            {
-                if (processModule == null) { return -1; }
-                return processModule.ModuleMemorySize;
-            }
-        }
-        public IntorProcc(Process process)
-        {
-            ID = process.Id;
-            this.process = process;
-        }
-        public IntorProcc(Process process, ProcessModule processModule)
-        {
-            ID = process.Id;
-            this.process = process;
-            this.processModule = processModule;
-        }
-        public override string ToString()
-        {
-            if (processModule == null) { return process.ProcessName; }
-            try { return $"{process.MainModule.ModuleName}=>{processModule.ModuleName}"; }
-            catch (Exception ex) { return ex.Message; }
-        }
+        catch (Exception ex) { return ex.Message; }
     }
 }

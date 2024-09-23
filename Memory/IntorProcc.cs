@@ -5,26 +5,6 @@ namespace Memory
 {
     public class IntorProcc
     {
-        public int ID { get; private set; } = -1;
-        public bool End { get => process.HasExited; }
-        public Process process { get; set; }
-        public int Size
-        {
-            get
-            {
-                if (process == null) { return -1; }
-                return process.MainModule.ModuleMemorySize;
-            }
-        }
-        public ProcessModule processModule { get; set; }
-        public int MSize
-        {
-            get
-            {
-                if (processModule == null) { return -1; }
-                return processModule.ModuleMemorySize;
-            } 
-        }
         public IntorProcc(Process process)
         {
             ID = process.Id;
@@ -36,10 +16,29 @@ namespace Memory
             this.process = process;
             this.processModule = processModule;
         }
+
+        public readonly Process process;
+
+        public readonly ProcessModule processModule;
+
+        public readonly int ID;
+        public bool End { get => process.HasExited; }
+        public int Size
+        {
+            get => process is null ? -1 : process.MainModule.ModuleMemorySize;
+        }
+        public int MSize
+        {
+            get => processModule is null ? -1 : processModule.ModuleMemorySize;
+        }
+
         public override string ToString()
         {
-            if (processModule == null) { return process.ProcessName; }
-            try { return $"{process.MainModule.ModuleName}=>{processModule.ModuleName}"; } 
+            try
+            {
+                return processModule is null ? process.ProcessName :
+                    $"{process.MainModule.ModuleName}=>{processModule.ModuleName}";
+            }
             catch (Exception ex) { return ex.Message; }
         }
     }
