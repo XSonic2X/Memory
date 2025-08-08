@@ -1,72 +1,76 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading;
 
-namespace Memory
+namespace Memory;
+
+public static class ProcessSearch
 {
-    public static class ProcessSearch
+    /// <summary>
+    /// Name = mspaint.exe
+    /// </summary>
+    /// <param name="MachineName"></param>
+    /// <returns></returns>
+    public static IEnumerator<IntorProcc> SearchMachineName(string MachineName)
     {
-        public static IntorProcc SearchMachineName(string MachineName)
-        {
-            while (true)
-            {
-                Process[] processes = Process.GetProcesses();
-                for (int i = 0; i < processes.Length; i++)
-                    try
-                    {
-                        if (processes[i].MainWindowHandle != IntPtr.Zero && processes[i].MainModule.ModuleName == MachineName)
-                            return new IntorProcc(processes[i]);
-                    }
-                    catch { }
-                Thread.Sleep(10);
-            }
-        }
-        public static IntorProcc SearchMachineName(string MachineName, string MachineName2)
-        {
-            while (true)
-            {
-                Process[] processes = Process.GetProcesses();
-                for (int i = 0; i < processes.Length; i++)
-                    try
-                    {
-                        if (processes[i].MainWindowHandle != IntPtr.Zero && processes[i].MainModule.ModuleName == MachineName)
-                            for (int j = 0; j < processes[i].Modules.Count; j++)
-                                if (processes[i].Modules[j].ModuleName == MachineName2)
-                                    return new IntorProcc(processes[i], processes[i].Modules[j]);
-                    }
-                    catch
-                    {
-                    }
-                Thread.Sleep(10);
-            }
-        }
-        public static IntorProcc SearchProcessName(string ProcessName)
-        {
-            Process[] processes = Process.GetProcesses();
-            for (int i = 0; i < processes.Length; i++)
-                try
-                {
-                    if (processes[i].MainWindowHandle != IntPtr.Zero && processes[i].ProcessName == ProcessName)
-                        return new IntorProcc(processes[i]);
-                }
-                catch
-                {
-                }
-            return null;
-        }
-        public static IntorProcc SearchProcessName(int ID)
-        {
-            Process[] processes = Process.GetProcesses();
-            for (int i = 0; i < processes.Length; i++)
-                try
-                {
-                    if (processes[i].MainWindowHandle != IntPtr.Zero && processes[i].Id == ID)
-                        return new IntorProcc(processes[i]);
-                }
-                catch
-                {
-                }
-            return null;
-        }
+        Process[] processes = Process.GetProcesses();
+        for (int i = 0; i < processes.Length; i++)
+            if (SearchMachineName(processes[i], MachineName))
+                yield return new IntorProcc(processes[i]);
+        yield break;
     }
+
+    public static IEnumerator<IntorProcc> SearchMachineName(string MachineName, string ModuleMachineName)
+    {
+        Process[] processes = Process.GetProcesses();
+        for (int i = 0; i < processes.Length; i++)
+            if (SearchMachineName(processes[i], MachineName) && SearchMachineName(processes[i], ModuleMachineName, out IntorProcc? intorProcc))
+                yield return intorProcc.Value;
+        yield break;
+    }
+
+    /// <summary>
+    /// Name = mspaint
+    /// </summary>
+    /// <param name="ProcessName"></param>
+    /// <returns></returns>
+    public static IEnumerator<IntorProcc> SearchProcessName(string ProcessName)
+    {
+        Process[] processes = Process.GetProcesses();
+        for (int i = 0; i < processes.Length; i++)
+            if (SearchProcessName(processes[i], ProcessName))
+                yield return new IntorProcc(processes[i]);
+        yield break;
+    }
+
+    private static bool SearchMachineName(Process p, string MachineName)
+    {
+        try
+        {
+            return p.MainWindowHandle is not 0 && p.MainModule.ModuleName == MachineName;
+        }
+        catch { return false; }
+    }
+
+    private static bool SearchProcessName(Process p, string ProcessName)
+    {
+        try
+        {
+            return p.MainWindowHandle is not 0 && p.ProcessName == ProcessName;
+        }
+        catch { return false; }
+    }
+
+    private static bool SearchMachineName(Process p, string ModuleMachineName, out IntorProcc? intorProcc)
+    {
+        for (int i = 0; i < p.Modules.Count; i++)
+            if (p.Modules[i].ModuleName == ModuleMachineName)
+            {
+                intorProcc = new IntorProcc(p, p.Modules[i]);
+                return true;
+            }
+
+        intorProcc = null;
+        return false;
+    }
+
 }
