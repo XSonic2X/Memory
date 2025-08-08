@@ -178,7 +178,7 @@ public abstract partial class ProcessMemory : IDisposable
         }
     }
 
-    public bool WriteStructСorrector<T>(IntPtr pOffset, T t) where T : struct
+    public bool WriteStructCorrector<T>(IntPtr pOffset, T t) where T : struct
     {
         FieldInfo[] fields = typeof(T).GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
         int[,] offse = new int[fields.Length, 2];
